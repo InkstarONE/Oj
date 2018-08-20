@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.zh.qq.mapper.UsersMapperCustom" >
+  <select id="queryFriendRequestList" resultType="com.zh.qq.pojo.vo.FriendRequestVO"
+  parameterType="String">
+      SELECT
+      sender.id AS sendUserId,
+      sender.username AS sendUsername,
+      sender.face_image AS sendFaceImage,
+      sender.nickname AS sendNickName
+      FROM friends_request fr
+      LEFT JOIN users sender
+      ON sender.id = fr.send_user_id
+      WHERE fr.accept_user_id = #{accpectUserId}
+  </select>
+
+    <select id="queryMyFriends" resultType="com.zh.qq.pojo.vo.MyFriendsVO"
+            parameterType="String">
+         SELECT
+          u.id AS friendUserId,
+          u.username AS friendUsername,
+          u.face_image AS friendFaceImage,
+          u.nickname AS friendNickname
+        FROM my_friends mf
+        LEFT JOIN users u
+        ON u.id = mf.my_friend_user_id
+        WHERE mf.my_user_id = #{userId}
+    </select>
+
+
+    <!--批处理更新消息为以签收-->
+    <update id="batchUpdateMsgSigned">
+        update chat_msg set sign_flag = 1 where id in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+</mapper>
